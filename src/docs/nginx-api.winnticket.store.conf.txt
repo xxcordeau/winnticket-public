@@ -1,0 +1,71 @@
+# Nginx 설정 파일 for api.winnticket.store
+# 위치: /etc/nginx/sites-available/api.winnticket.store
+# 백엔드 서버: <YOUR_SERVER_IP>:8080
+
+server {
+    listen 80;
+    server_name api.winnticket.store;
+
+    # 로그 설정
+    access_log /var/log/nginx/api_winnticket_access.log;
+    error_log /var/log/nginx/api_winnticket_error.log;
+
+    # Let's Encrypt 인증서 검증용
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+
+    # 모든 요청을 Spring Boot 서버로 프록시
+    location / {
+        proxy_pass http://<YOUR_SERVER_IP>:8080;
+        proxy_http_version 1.1;
+        
+        # 헤더 설정
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host $host;
+        proxy_set_header X-Forwarded-Port $server_port;
+        
+        # WebSocket 지원
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # 타임아웃 설정
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+        
+        # 버퍼 설정
+        proxy_buffering off;
+        proxy_buffer_size 4k;
+        proxy_buffers 8 4k;
+        proxy_busy_buffers_size 8k;
+    }
+
+    # API 엔드포인트 특별 처리 (필요시)
+    location ~ ^/api/ {
+        # OPTIONS 요청 처리 (CORS preflight)
+        if ($request_method = 'OPTIONS') {
+            add_header 'Access-Control-Allow-Origin' 'https://winnticket.store' always;
+            add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, PATCH, DELETE, OPTIONS' always;
+            add_header 'Access-Control-Allow-Headers' 'DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization' always;
+            add_header 'Access-Control-Allow-Credentials' 'true' always;
+            add_header 'Access-Control-Max-Age' 1728000 always;
+            add_header 'Content-Type' 'text/plain; charset=utf-8' always;
+            add_header 'Content-Length' 0 always;
+            return 204;
+        }
+
+        proxy_pass http://<YOUR_SERVER_IP>:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# SSL 설정은 Certbot이 자동으로 추가합니다
+# certbot --nginx -d api.winnticket.store 실행 후 자동 생성됨

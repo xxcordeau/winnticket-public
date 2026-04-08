@@ -1,0 +1,44 @@
+package com.winnticket.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+/**
+ * CORS 설정
+ * 프론트엔드(winnticket.store)에서 API(api.winnticket.store)를 호출할 수 있도록 허용
+ */
+@Configuration
+public class WebConfig implements WebMvcConfigurer {
+    
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins(
+                    // 
+                    "http://localhost:5173",
+                    "http://localhost:3000",
+                    "http://localhost:4173",
+                    
+                    // 
+                    "https://winnticket.store",
+                    "https://www.winnticket.store",
+                    "https://api.winnticket.store",
+                    
+                    // IP ()
+                    "http://<YOUR_SERVER_IP>",
+                    "http://<YOUR_SERVER_IP>:8080"
+                )
+                .allowedMethods(
+                    "GET", 
+                    "POST", 
+                    "PUT", 
+                    "PATCH", 
+                    "DELETE", 
+                    "OPTIONS"
+                )
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600); // 1 preflight 
+    }
+}
