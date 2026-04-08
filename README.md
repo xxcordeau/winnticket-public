@@ -1,8 +1,9 @@
-# winnticket-public
 
-티켓 판매 플랫폼 winnticket의 프론트엔드 프로젝트입니다.  
-쇼핑몰(고객 구매), 관리자(어드민), 현장관리자 UI를 하나의 SPA로 구성합니다.
-https://www.winnticket.co.kr/
+<img width="200" height="171" alt="Group 14" src="https://github.com/user-attachments/assets/d366bb4b-e7de-48a0-8140-6ac30c6b2ba7" />
+
+### 티켓 판매 플랫폼 winnticket의 프론트엔드 프로젝트입니다.  
+### 쇼핑몰(고객 구매), 관리자(어드민), 현장관리자 UI를 하나의 SPA로 구성합니다.
+###  https://www.winnticket.co.kr/
 ---
 
 ## 기술 스택
